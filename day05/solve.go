@@ -94,8 +94,7 @@ func cut(moves int, stack []string) ([]string, []string) {
 	return newSrc, moved
 }
 
-//	[M]     [B]             [N]
-//
+// -----   [M]     [B]             [N]
 // [T]     [H]     [V] [Q]         [H]
 // [Q]     [N]     [H] [W] [T]     [Q]
 // [V]     [P] [F] [Q] [P] [C]     [R]
