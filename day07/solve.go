@@ -14,6 +14,7 @@ const maxSize = 100000
 func main() {
 	data := readFile("./input.txt")
 	fmt.Println(part1(data))
+	fmt.Println(part2(data))
 }
 
 func readFile(filename string) []string {
@@ -33,27 +34,37 @@ func readFile(filename string) []string {
 	return lines
 }
 
-func part1(input []string) int {
-	listings := dirListings(input)
-	lineCnt := len(input)
-	dirs := make(map[int]int)
-	for _, lineNum := range listings {
-		dirs[lineNum] = 0
-		line := []rune(input[lineNum])
-		// keep going until next human command
-		for i := 0; line[0] != '$' && lineNum+i < lineCnt-1; i++ {
-			fmt.Println(lineNum, i)
-			fields := strings.Fields(input[lineNum+i])
-			size, err := strconv.Atoi(fields[0])
-			line = []rune(input[lineNum+i])
-			if err != nil { // this is a dir listiting or human command
-				continue
+func sizeMap(input []string) map[string]int {
+	listings := make(map[string]int)
+	var path []string
+	for _, line := range input {
+		fields := strings.Fields(line)
+		if fields[1] == "cd" {
+			if fields[2] == ".." {
+				path = path[:len(path)-1] // pop last part
 			} else {
-				dirs[lineNum] += size
+				path = append(path, fields[2])
+			}
+		} else if fields[1] == "ls" || fields[0] == "dir" {
+			continue
+		} else {
+			size, _ := strconv.Atoi(fields[0])
+			for i := 1; i < len(path)+1; i++ {
+				pathName := strings.Join(path[:i], "/")
+				if _, ok := listings[pathName]; ok {
+					listings[pathName] += size
+				} else {
+					listings[pathName] = size
+				}
 			}
 		}
 	}
+	return listings
+}
+
+func part1(input []string) int {
 	sum := 0
+	dirs := sizeMap(input)
 	for _, v := range dirs {
 		if v <= maxSize {
 			sum += v
@@ -61,12 +72,19 @@ func part1(input []string) int {
 	}
 	return sum
 }
-func dirListings(input []string) []int {
-	var listings []int
-	for i, line := range input {
-		if line[:4] == "$ ls" {
-			listings = append(listings, i+1) // want to start reading from line after ls
+
+func part2(input []string) int {
+	dirs := sizeMap(input)
+	const totalSpace = 70000000
+	const requiredSpace = 30000000
+	availSpace := totalSpace - dirs["/"]
+	toDel := requiredSpace - availSpace
+
+	min := dirs["/"]
+	for _, v := range dirs {
+		if v >= toDel && v < min {
+			min = v
 		}
 	}
-	return listings
+	return min
 }
