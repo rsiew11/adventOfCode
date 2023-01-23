@@ -1,3 +1,4 @@
+
 struct Monkey {
     items: Vec<usize>,
     operation: Box<dyn Fn(usize) -> usize>,
@@ -7,10 +8,9 @@ struct Monkey {
     inspection_count: usize,
 }
 
-
-fn main() {
-    let monkeys: Vec<_> = include_str!("../input.txt")
-        .split("\r\n\r\n")
+fn gimme_monkeys() -> Vec<Monkey> {
+    include_str!("../input.txt")
+        .split("\n\n")
         .map(|monkey| {
             let fields: Vec<_> = monkey.lines()
                 .map(|line| line.split(": ") // separate key : val
@@ -38,14 +38,43 @@ fn main() {
                 inspection_count: 0,
             }
         })
-        .collect();
-    for monkey in monkeys.iter(){
-        println!("\n");
-        println!("{:?}", monkey.items);
-        println!("{}",monkey.test);
-        println!("{}",monkey.pass);
-        println!("{}",monkey.fail);
-        println!("{}",monkey.inspection_count);
-    }
+        .collect()
+}
 
+fn part1(mut monkeys: Vec<Monkey>) {
+    for _ in 0..20 {
+        for i in 0..monkeys.len() {
+            for j in 0..monkeys[i].items.len() {
+                let worry = ((monkeys[i].operation)(monkeys[i].items[j])) / 3;
+                let receiver = if worry % monkeys[i].test == 0 {monkeys[i].pass} else {monkeys[i].fail};
+                monkeys[receiver].items.push(worry);
+                monkeys[i].inspection_count += 1;
+            } 
+            monkeys[i].items.clear();
+        }
+    }
+    monkeys.sort_by_key(|m| m.inspection_count);
+    println!("{}",monkeys.iter().rev().take(2).map(|m| m.inspection_count).product::<usize>());
+}
+
+fn part2(mut monkeys: Vec<Monkey>) {
+    let magic: usize = monkeys.iter().map(|m| m.test).product();
+    for _ in 0..10000 {
+        for i in 0..monkeys.len() {
+            for j in 0..monkeys[i].items.len() {
+                let worry = ((monkeys[i].operation)(monkeys[i].items[j])) % magic;
+                let receiver = if worry % monkeys[i].test == 0 {monkeys[i].pass} else {monkeys[i].fail};
+                monkeys[receiver].items.push(worry);
+                monkeys[i].inspection_count += 1;
+            } 
+            monkeys[i].items.clear();
+        }
+    }
+    monkeys.sort_by_key(|m| m.inspection_count);
+    println!("{}",monkeys.iter().rev().take(2).map(|m| m.inspection_count).product::<usize>());
+}
+
+fn main() {
+    part1(gimme_monkeys());
+    part2(gimme_monkeys());
 }
