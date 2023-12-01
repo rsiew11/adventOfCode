@@ -14,26 +14,21 @@ class Solution {
     }
 
     private static int part1(List<String> input) {
-        final var l = input.stream()
+        return input.stream()
             .map(row -> row.chars()
                 .mapToObj(c -> (char)c)
                 .filter(c -> Character.isDigit(c))
                 .findFirst().get())
-            .collect(Collectors.toList());
-        final var r = input.stream()
+            .map(c -> Integer.valueOf(String.valueOf(c)) * 10)
+            .reduce((c1,c2) -> c1+c2).get() 
+            + 
+            input.stream()
             .map(row -> row.chars()
                 .mapToObj(c -> (char)c)
                 .filter(c -> Character.isDigit(c))
                 .reduce((c1,c2) -> c2).get())
-            .collect(Collectors.toList());
-      
-        var res = 0;
-        for (int i=0; i<l.size(); i++) {
-            res += Integer.parseInt(
-                String.valueOf(l.get(i)) + String.valueOf(r.get(i))
-            );
-        }
-        return res;
+            .map(c -> Integer.valueOf(String.valueOf(c)))
+            .reduce((c1,c2) -> c1+c2).get();
     }
 
     private static int part2(List<String> input) {
