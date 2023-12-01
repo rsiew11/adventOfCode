@@ -59,38 +59,38 @@ func part2(input []string) int {
 						   "six", "seven", "eight", "nine"}
 	res := 0
 
-	for _, row := range input {
+	for _, row := range input { // for each row in the file
 		runes := []rune(row)
 		l, lVal := 0, ""
-		for i, val := range runes {
+		for i, val := range runes { // find left most digit in the row
 			if unicode.IsDigit(val) {
 				l, lVal = i, string(val)
 				break
 			}
 		}
-		for i, val := range validStrs {
+		for i, val := range validStrs { // find left most match with "validStrs"
 			loc := strings.Index(row, val)
 			if loc != -1 && loc < l {
 				l = loc
-				lVal = strconv.Itoa(i+1)
+				lVal = strconv.Itoa(i+1) // replace digit with "str" val
 			}
 		}
 
 		r, rVal := 0, ""
-		for i := len(runes)-1; i >= l; i-- {
+		for i := len(runes)-1; i >= l; i-- { // find right most digit in the row
 			if unicode.IsDigit(runes[i]) {
 				r, rVal = i, string(runes[i])
 				break
 			}
 		}
-		for i, val := range validStrs {
+		for i, val := range validStrs { // find right most match with "validStrs"
 			loc := strings.LastIndex(row, val)
 			if loc != -1 && loc > r {
 				r = loc
-				rVal = strconv.Itoa(i+1)
+				rVal = strconv.Itoa(i+1) // replace digit with "str" val
 			}
 		}
-		lineVal, err := strconv.Atoi(lVal+rVal)
+		lineVal, err := strconv.Atoi(lVal+rVal) // combine L most and R most
 		if err != nil {
 			fmt.Println("ERROR")
 			return 0
@@ -102,6 +102,6 @@ func part2(input []string) int {
 
 func main() {
 	data := readFile("./input.txt")
-	fmt.Println(part1(data))
-	fmt.Println(part2(data))
+	fmt.Println("part1: ", part1(data))
+	fmt.Println("part2: ", part2(data))
 }
