@@ -35,11 +35,47 @@ func atoi(a string) int {
 	}
 }
 
+func part1(data []string) int {
+	res := 0
+	nonSymb := make(map[string]bool)
+	validNum := make(map[string]bool)
+	dirs := [][]int{{1,0}, {-1,0}, {0,1}, {0,-1}, {-1,-1}, {1,-1}, {-1,1}, {1,1}}
+	for _, c := range strings.Split("1234567890", "") {
+		nonSymb[c] = true
+		validNum[c] = true
+	}
+	nonSymb["."] = true
+	var chars [][]string
+	for _,row := range data {
+		chars = append(chars, strings.Split(row, ""))
+	}
+	keep, num := false, ""
+	for r, row := range chars {
+		for c, char := range row {
+			if _, ok := validNum[char]; ok { 
+				num += char
+				for _, d := range dirs { 
+					x, y := r+d[0], c+d[1]
+					if x < 0 || x >= len(row) || y >= len(chars) || y < 0 { 
+						continue // if invalid
+					}
+					if _, ok := nonSymb[chars[x][y]]; !ok { // if there is adjacent symbol
+						keep = true
+					}
+				}
+			} else {
+				if keep == true {
+					res += atoi(num)
+				}
+				keep, num = false, ""
+			}
+		}
+	}
+	return res
+}
+
 func findNum(line []string, idx int, validNum map[string]bool) int {
 	l, r := idx, idx
-	fmt.Println()
-	fmt.Println(line)
-	fmt.Println("idx: ",idx, "num: ", line[idx])
 	// search left
 	for l >= 0 {
 		if _, ok := validNum[line[l]]; ok {
@@ -56,49 +92,43 @@ func findNum(line []string, idx int, validNum map[string]bool) int {
 			break
 		}
 	}
-	fmt.Println("parsed",line[l+1:r])
 	return atoi(strings.Join(line[l+1:r], ""))
 }
 
 
-// if parsing/starting from a symbol, we can be double counting numbers!!! 
-func part1(data []string) int {
+func part2(data []string) int {
 	res := 0
-	nonSymb := make(map[string]bool)
 	validNum := make(map[string]bool)
-	dirs := [][]int{{1,0}, {-1,0}, {0,1}, {0,-1}, {-1,-1}, {1,-1}, {1,-1}, {1,1}}
-	for _, c := range strings.Split("123456789", "") {
-		nonSymb[c] = true
+	dirs := [][]int{{1,0}, {-1,0}, {0,1}, {0,-1}, {-1,-1}, {1,-1}, {-1,1}, {1,1}}
+	for _, c := range strings.Split("1234567890", "") {
 		validNum[c] = true
 	}
-	nonSymb["."] = true
 	var chars [][]string
 	for _,row := range data {
 		chars = append(chars, strings.Split(row, ""))
 	}
-
 	for r, row := range chars {
 		for c, char := range row {
-			if _, ok := nonSymb[char]; !ok { // if a symbol check all dirs
-				for _, d := range dirs { 
-					x, y := r+d[0], c+d[1]
-					if x < 0 || x >= len(row) || y >= len(chars) || y < 0 {
-						continue
-					}
-					if _, ok := validNum[chars[x][y]]; ok {
-						zz := findNum(chars[x], y, validNum)
-						res += zz
-					}
+			if char != "*" { continue }
+			adjacent := make(map[int]bool)
+			for _, d := range dirs { // from the * check surrounding for nums
+				x, y := r+d[0], c+d[1]
+				if _, ok := validNum[chars[x][y]]; ok {
+					n := findNum(chars[x], y, validNum)
+					// fmt.Println("found", n)
+					adjacent[n] = true
 				}
 			}
+			product := 1
+			if len(adjacent) == 2 {
+				for k, _ := range adjacent {
+					product *= k
+				}
+				res += product
+			}
 		}
-
 	}
 	return res
-}
-
-func part2(data []string) int {
-	return 0
 }
 
 func main() {
