@@ -66,10 +66,9 @@ func formatGames(input []string) [][3]int {
 }
 
 
-func part1(input []string) int {
+func part1(games [][3]int) int {
 	c := make(map[string]int)
 	c["r"], c["g"], c["b"] = 12, 13, 14
-	games := formatGames(input)
 	sum := 0
 	for id, game := range games {
 		if game[0] <= c["r"] && game[1] <= c["g"] && game[2] <= c["b"] {
@@ -79,8 +78,7 @@ func part1(input []string) int {
 	return sum
 }
 
-func part2(input []string) int {
-	games := formatGames(input)
+func part2(games [][3]int) int {
 	sum := 0
 	for _, game := range games {
 		sum += game[0] * game[1] * game[2]
@@ -90,6 +88,7 @@ func part2(input []string) int {
 
 func main() {
 	data := readFile("./input.txt")
-	fmt.Println("part1:", part1(data))
-	fmt.Println("part2:", part2(data))
+	games := formatGames(data)
+	fmt.Println("part1:", part1(games))
+	fmt.Println("part2:", part2(games))
 }
