@@ -149,43 +149,43 @@ func assignOpt(h hand) int {
 	optimal := make([]string, len(h.hand))
 	copy(optimal, h.hand)
 	for slices.Contains(optimal, "J") {
-		j := slices.Index(optimal, "J")
+		jLoc := slices.Index(optimal, "J")
 		switch h.kind {
 		case 6: // 5 of a kind
 			return h.kind // cant do anything here (5 * J)
 		case 5: // 4 of a kind
 			k := findKey(h.cntMap, 4)
-			optimal[j] = k
+			optimal[jLoc] = k
 			h.cntMap[k] += 1
 			h.cntMap["J"] -= 1
 			h.kind = assignKind(h.cntMap)
 		case 4: // full house
 			k := findKey(h.cntMap, 3) // -> 4 of a kind
-			optimal[j] = k
+			optimal[jLoc] = k
 			h.cntMap[k] += 1
 			h.cntMap["J"] -= 1
 			h.kind = assignKind(h.cntMap)
 		case 3: // 3 of a kind
 			k := findKey(h.cntMap, 3) // -> 4 of a kind
-			optimal[j] = k
+			optimal[jLoc] = k
 			h.cntMap[k] += 1
 			h.cntMap["J"] -= 1
 			h.kind = assignKind(h.cntMap)
 		case 2: // 2 pair
 			k := findKey(h.cntMap, 2) // -> to full house
-			optimal[j] = k
+			optimal[jLoc] = k
 			h.cntMap[k] += 1
 			h.cntMap["J"] -= 1
 			h.kind = assignKind(h.cntMap)
 		case 1: // pair
 			k := findKey(h.cntMap, 2) // --> to 3 of a kind
-			optimal[j] = k
+			optimal[jLoc] = k
 			h.cntMap[k] += 1
 			h.cntMap["J"] -= 1
 			h.kind = assignKind(h.cntMap)
 		case 0: // high card
 			k := findKey(h.cntMap, 1) // --> to pair
-			optimal[j] = k
+			optimal[jLoc] = k
 			h.cntMap[k] += 1
 			h.cntMap["J"] -= 1
 			h.kind = assignKind(h.cntMap)
