@@ -39,24 +39,24 @@ func part1(data []string) int {
 	res := 0
 	nonSymb := make(map[string]bool)
 	validNum := make(map[string]bool)
-	dirs := [][]int{{1,0}, {-1,0}, {0,1}, {0,-1}, {-1,-1}, {1,-1}, {-1,1}, {1,1}}
+	dirs := [][]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {-1, -1}, {1, -1}, {-1, 1}, {1, 1}}
 	for _, c := range strings.Split("1234567890", "") {
 		nonSymb[c] = true
 		validNum[c] = true
 	}
 	nonSymb["."] = true
 	var chars [][]string
-	for _,row := range data {
+	for _, row := range data {
 		chars = append(chars, strings.Split(row, ""))
 	}
 	keep, num := false, ""
 	for r, row := range chars {
 		for c, char := range row {
-			if _, ok := validNum[char]; ok { 
+			if _, ok := validNum[char]; ok {
 				num += char
-				for _, d := range dirs { 
+				for _, d := range dirs {
 					x, y := r+d[0], c+d[1]
-					if x < 0 || x >= len(row) || y >= len(chars) || y < 0 { 
+					if x < 0 || x >= len(row) || y >= len(chars) || y < 0 {
 						continue // if invalid
 					}
 					if _, ok := nonSymb[chars[x][y]]; !ok { // if there is adjacent symbol
@@ -95,21 +95,22 @@ func findNum(line []string, idx int, validNum map[string]bool) int {
 	return atoi(strings.Join(line[l+1:r], ""))
 }
 
-
 func part2(data []string) int {
 	res := 0
 	validNum := make(map[string]bool)
-	dirs := [][]int{{1,0}, {-1,0}, {0,1}, {0,-1}, {-1,-1}, {1,-1}, {-1,1}, {1,1}}
+	dirs := [][]int{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {-1, -1}, {1, -1}, {-1, 1}, {1, 1}}
 	for _, c := range strings.Split("1234567890", "") {
 		validNum[c] = true
 	}
 	var chars [][]string
-	for _,row := range data {
+	for _, row := range data {
 		chars = append(chars, strings.Split(row, ""))
 	}
 	for r, row := range chars {
 		for c, char := range row {
-			if char != "*" { continue }
+			if char != "*" {
+				continue
+			}
 			adjacent := make(map[int]bool)
 			for _, d := range dirs { // from the * check surrounding for nums
 				x, y := r+d[0], c+d[1]
