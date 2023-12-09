@@ -56,8 +56,53 @@ func part1(moves []string, m map[string]loc) int {
 	return count
 }
 
+func findLocations(m map[string]loc, char byte) []string {
+	locations := make([]string, 0)
+	for k, _ := range m {
+		if k[len(k)-1] == char {
+			locations = append(locations, k)
+		}
+	}
+	return locations
+}
+
 func part2(moves []string, m map[string]loc) int {
-	return 0
+	count, done := 0, false
+	curLocs := findLocations(m, 'A')
+	endLocs := make(map[string]bool)
+
+	for _, l := range findLocations(m, 'Z') {
+		endLocs[l] = true
+	}
+	// fmt.Println(curLocs)
+	// fmt.Println(endLocs)
+
+	for true {
+		for _, move := range moves {
+			if move == "R" {
+				for i, cur := range curLocs {
+					curLocs[i] = m[cur].right
+				}
+			} else {
+				for i, cur := range curLocs {
+					curLocs[i] = m[cur].left
+				}
+			}
+			count++
+			done = true
+			fmt.Println(count, curLocs)
+			for _, cur := range curLocs {
+				if _, ok := endLocs[cur]; !ok {
+					done = false
+					break
+				}
+			}
+			if done == true {
+				return count
+			}
+		}
+	}
+	return count
 }
 
 func main() {
