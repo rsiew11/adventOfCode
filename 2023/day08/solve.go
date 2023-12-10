@@ -66,43 +66,45 @@ func findLocations(m map[string]loc, char byte) []string {
 	return locations
 }
 
+func gcd(a int, b int) int {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+func lcm(vals []int) int {
+	res := 1
+	for _, v := range vals {
+		res = (v * res) / gcd(v, res)
+	}
+	return res
+}
+
 func part2(moves []string, m map[string]loc) int {
-	count, done := 0, false
 	curLocs := findLocations(m, 'A')
 	endLocs := make(map[string]bool)
-
 	for _, l := range findLocations(m, 'Z') {
 		endLocs[l] = true
 	}
-	// fmt.Println(curLocs)
-	// fmt.Println(endLocs)
+	counts := make([]int, len(curLocs))
 
-	for true {
-		for _, move := range moves {
-			if move == "R" {
-				for i, cur := range curLocs {
-					curLocs[i] = m[cur].right
+	for i, start := range curLocs {
+		cur := start
+		for cur[len(cur)-1] != 'Z' {
+			for _, move := range moves {
+				if move == "R" {
+					cur = m[cur].right
+				} else {
+					cur = m[cur].left
 				}
-			} else {
-				for i, cur := range curLocs {
-					curLocs[i] = m[cur].left
-				}
-			}
-			count++
-			done = true
-			fmt.Println(count, curLocs)
-			for _, cur := range curLocs {
-				if _, ok := endLocs[cur]; !ok {
-					done = false
-					break
-				}
-			}
-			if done == true {
-				return count
+				counts[i]++
 			}
 		}
 	}
-	return count
+	return lcm(counts)
 }
 
 func main() {
