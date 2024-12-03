@@ -1,4 +1,3 @@
-from itertools import pairwise
 
 def read():
     with open("./input.txt") as fd:
@@ -32,10 +31,7 @@ def p2():
             continue
 
         variations = [line[:i] + line[i+1:] for i in range(len(line))]
-        for var in variations:
-            if isSafe(var):
-                safe += 1
-                break
+        if any(isSafe(var) for var in variations): safe += 1
 
     return safe
 
